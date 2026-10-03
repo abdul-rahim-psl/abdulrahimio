@@ -1,0 +1,58 @@
+---
+import { site } from '../site';
+
+const elsewhere = [
+  { href: site.links.youtube, label: 'YouTube' },
+  { href: site.links.linkedin, label: 'LinkedIn' },
+  { href: site.links.leetcode, label: 'LeetCode' },
+  { href: site.links.medium, label: 'Medium' },
+];
+---
+
+<footer class="wrap">
+  <a class="email" href={`mailto:${site.email}`}>{site.email}</a>
+  <nav aria-label="Elsewhere">
+    {elsewhere.map(({ href, label }) => (
+      <a href={href} target="_blank" rel="noopener">
+        {label}
+      </a>
+    ))}
+  </nav>
+  <p>© {new Date().getFullYear()} {site.name} · {site.title}</p>
+</footer>
+
+<style>
+  footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem 1.5rem;
+    margin-top: 5rem;
+    padding-block: 2rem 2.5rem;
+    border-top: 1px solid var(--line);
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+
+  .email {
+    color: var(--text);
+    font-weight: 600;
+    text-decoration-color: var(--accent);
+    text-underline-offset: 0.25em;
+  }
+
+  nav {
+    display: flex;
+    gap: 1.25rem;
+  }
+
+  nav a {
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  nav a:hover {
+    color: var(--accent-ink);
+  }
+</style>

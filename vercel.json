@@ -1,0 +1,8 @@
+{
+  "redirects": [
+    { "source": "/yt", "destination": "https://www.youtube.com/@AbdulRaheemCodes", "permanent": false },
+    { "source": "/in", "destination": "https://www.linkedin.com/in/abdulrahimio/", "permanent": false },
+    { "source": "/lc", "destination": "https://leetcode.com/u/abdulxraheem/", "permanent": false },
+    { "source": "/medium", "destination": "https://medium.com/@abdulrahimio", "permanent": false }
+  ]
+}

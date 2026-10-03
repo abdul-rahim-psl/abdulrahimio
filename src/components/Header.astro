@@ -1,0 +1,95 @@
+---
+import { site } from '../site';
+
+const nav = [
+  { href: '/videos', label: 'Videos' },
+  { href: '/writing', label: 'Writing' },
+];
+const path = Astro.url.pathname;
+---
+
+<header class="wrap">
+  <a class="wordmark" href="/">
+    {site.name}
+    <span class="pulse" aria-hidden="true"></span>
+  </a>
+  <nav aria-label="Main">
+    {nav.map(({ href, label }) => (
+      <a href={href} aria-current={path.startsWith(href) ? 'page' : undefined}>
+        {label}
+      </a>
+    ))}
+    <a class="hi" href={`mailto:${site.email}`}>Say hi</a>
+  </nav>
+</header>
+
+<style>
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 1.5rem;
+  }
+
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+  }
+
+  /* A live "on air" dot: the one bit of motion that never stops. */
+  .pulse {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 0 var(--accent);
+    animation: pulse 2.4s ease-out infinite;
+  }
+
+  @keyframes pulse {
+    70% {
+      box-shadow: 0 0 0 0.45rem transparent;
+    }
+    100% {
+      box-shadow: 0 0 0 0 transparent;
+    }
+  }
+
+  nav {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  nav a {
+    padding: 0.4rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.95rem;
+    color: var(--muted);
+    text-decoration: none;
+    transition:
+      color 0.2s,
+      background-color 0.2s;
+  }
+
+  nav a:hover,
+  nav a[aria-current='page'] {
+    color: var(--text);
+    background: var(--accent-soft);
+  }
+
+  nav .hi {
+    color: var(--accent-ink);
+    font-weight: 600;
+  }
+
+  @media (max-width: 480px) {
+    nav a {
+      padding-inline: 0.5rem;
+    }
+  }
+</style>

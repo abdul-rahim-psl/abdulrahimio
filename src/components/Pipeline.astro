@@ -1,0 +1,162 @@
+---
+import { site } from '../site';
+
+const count = site.pipeline.length;
+---
+
+<figure class="pipeline" style={`--cols: ${count}; --gaps: ${count - 1}`}>
+  <ol aria-label="How I deliver">
+    {site.pipeline.map((stage, i) => (
+      <li style={`--i: ${i}`}>
+        <span class="dot" aria-hidden="true" />
+        {stage}
+      </li>
+    ))}
+  </ol>
+  <figcaption>
+    Problem solving and clear communication at every step. <strong>AI-amplified</strong> throughout.
+  </figcaption>
+</figure>
+
+<style>
+  /* One pass of the accent along the line, lighting each stage as it arrives. */
+  .pipeline {
+    --start: 0.4s;
+    --run: 1.8s;
+    margin: 0;
+    padding: 2rem 0 0;
+  }
+
+  ol {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(var(--cols), 1fr);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  ol::before,
+  ol::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    left: calc(50% / var(--cols));
+    right: calc(50% / var(--cols));
+    height: 2px;
+    border-radius: 2px;
+    background: var(--line);
+  }
+
+  ol::after {
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    animation: run-x var(--run) linear var(--start) forwards;
+  }
+
+  li {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.7rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--muted);
+    text-align: center;
+    --arrive: calc(var(--start) + var(--i) * var(--run) / var(--gaps));
+    animation: ink 0.3s ease var(--arrive) forwards;
+  }
+
+  .dot {
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--line);
+    border-radius: 50%;
+    background: var(--bg);
+    animation: light 0.3s ease var(--arrive) forwards;
+  }
+
+  li:last-child .dot {
+    animation:
+      light 0.3s ease var(--arrive) forwards,
+      ring 1.4s ease-out calc(var(--arrive) + 0.3s) 2;
+  }
+
+  figcaption {
+    margin-top: 1.75rem;
+    font-size: 0.95rem;
+    color: var(--muted);
+  }
+
+  figcaption strong {
+    color: var(--text);
+  }
+
+  @keyframes run-x {
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  @keyframes run-y {
+    to {
+      transform: scaleY(1);
+    }
+  }
+
+  @keyframes light {
+    to {
+      border-color: var(--accent);
+      background: var(--accent);
+    }
+  }
+
+  @keyframes ink {
+    to {
+      color: var(--text);
+    }
+  }
+
+  @keyframes ring {
+    from {
+      box-shadow: 0 0 0 0 var(--accent);
+    }
+    to {
+      box-shadow: 0 0 0 10px transparent;
+    }
+  }
+
+  /* Seven labels don't fit a phone's width, so the line runs downwards instead. */
+  @media (max-width: 720px) {
+    ol {
+      grid-template-columns: 1fr;
+      row-gap: 0.85rem;
+    }
+
+    ol::before,
+    ol::after {
+      top: 0.75rem;
+      bottom: 0.75rem;
+      left: 6px;
+      right: auto;
+      width: 2px;
+      height: auto;
+    }
+
+    ol::after {
+      transform: scaleY(0);
+      transform-origin: top;
+      animation-name: run-y;
+    }
+
+    li {
+      flex-direction: row;
+      gap: 0.9rem;
+      font-size: 0.95rem;
+      text-align: left;
+    }
+  }
+</style>

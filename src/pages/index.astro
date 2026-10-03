@@ -1,0 +1,293 @@
+---
+import Base from '../layouts/Base.astro';
+import Pipeline from '../components/Pipeline.astro';
+import Door from '../components/Door.astro';
+import { site } from '../site';
+import { getChannel, getLeetCode, getPosts } from '../lib/feeds';
+import { formatDate, formatNumber } from '../lib/format';
+
+const [channel, posts, leetcode] = await Promise.all([getChannel(), getPosts(), getLeetCode()]);
+const [latestVideo] = channel.videos;
+const [latestPost] = posts;
+const linkedinHandle = site.links.linkedin.replace(/^https:\/\/(www\.)?/, '').replace(/\/$/, '');
+---
+
+<Base>
+  <section class="hero">
+    <div class="intro">
+      <p class="eyebrow">{site.title}</p>
+      <h1>From the <span class="voice">first question</span> to the <span class="voice">final deploy</span>.</h1>
+      <p class="lede">
+        I'm Abdul Rahim, a curious engineer who owns delivery end to end. I gather the requirements, make the
+        business case, build it, test it, try to break it, and hand it to the client myself.
+      </p>
+    </div>
+    <figure class="portrait">
+      <picture>
+        <source
+          type="image/webp"
+          srcset="/images/abdul-rahim-working-480.webp 480w, /images/abdul-rahim-working.webp 702w"
+          sizes="(min-width: 900px) 400px, 100vw"
+        />
+        <img
+          src="/images/abdul-rahim-working.jpg"
+          width="702"
+          height="560"
+          alt="Abdul Rahim at his desk, working through a problem"
+          fetchpriority="high"
+        />
+      </picture>
+      <figcaption class="voice">me, mid-problem</figcaption>
+    </figure>
+  </section>
+
+  <Pipeline />
+
+  <section class="doors" aria-label="Find me elsewhere">
+    <Door href="/videos" label="Watch me think" cta={channel.videoCount ? `All ${channel.videoCount} videos` : 'All videos'}>
+      {latestVideo ? (
+        <>
+          <img class="thumb" src={latestVideo.thumbnail} alt="" width="480" height="360" loading="lazy" />
+          <p class="title">{latestVideo.title}</p>
+          <p class="meta">Latest on YouTube · {formatDate(latestVideo.published)}</p>
+        </>
+      ) : (
+        <p class="title">Problem solving, out loud, on YouTube.</p>
+      )}
+    </Door>
+
+    <Door href="/writing" label="Read my notes" cta="All writing">
+      {latestPost ? (
+        <>
+          {latestPost.cover && <img class="thumb" src={latestPost.cover} alt="" loading="lazy" />}
+          <p class="title">{latestPost.title}</p>
+          <p class="excerpt">{latestPost.excerpt}</p>
+          <p class="meta">On Medium · {formatDate(latestPost.published)}</p>
+        </>
+      ) : (
+        <p class="title">Long-form notes on Medium.</p>
+      )}
+    </Door>
+
+    <Door href={site.links.leetcode} external label="See me practise" cta="LeetCode profile">
+      <p class="stat">
+        <span class="big">{formatNumber(leetcode.solved)}</span>
+        problems solved
+      </p>
+      <ul class="bars">
+        {leetcode.difficulties.map((d) => (
+          <li class={d.label.toLowerCase()} style={`--fill: ${d.total ? d.solved / d.total : 0}`}>
+            <span>{d.label}</span>
+            <span class="track" aria-hidden="true"><span class="fill" /></span>
+            <span class="count">{d.solved}</span>
+          </li>
+        ))}
+      </ul>
+      <p class="meta">Day {site.practiceDays} of daily practice · Global rank #{formatNumber(leetcode.ranking)}</p>
+    </Door>
+
+    <Door href={site.links.linkedin} external label="Let's talk" cta="Connect on LinkedIn">
+      <div class="person">
+        <img src="/images/abdul-rahim-avatar.webp" alt="" width="56" height="56" loading="lazy" />
+        <div>
+          <p class="name">{site.name}</p>
+          <p class="meta">{site.title}</p>
+        </div>
+      </div>
+      <p class="title">Got a hard problem? I'd love to hear about it.</p>
+      <p class="meta">{linkedinHandle}</p>
+    </Door>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    display: grid;
+    gap: 2.5rem;
+    align-items: center;
+    padding-top: 3rem;
+  }
+
+  .intro {
+    display: grid;
+    gap: 1.4rem;
+  }
+
+  h1 {
+    font-size: clamp(2.6rem, 6.4vw, 4.6rem);
+    font-weight: 750;
+    letter-spacing: -0.045em;
+  }
+
+  /* The serif runs optically small next to the heavy sans; nudge it up to match. */
+  h1 .voice {
+    font-size: 1.12em;
+    line-height: 1;
+  }
+
+  .portrait {
+    margin: 0;
+  }
+
+  .portrait img {
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    box-shadow: 0 30px 60px -40px rgb(0 0 0 / 0.45);
+  }
+
+  .portrait figcaption {
+    margin-top: 0.6rem;
+    font-size: 1.25rem;
+    text-align: right;
+  }
+
+  @media (min-width: 900px) {
+    .hero {
+      grid-template-columns: 1.35fr 1fr;
+      gap: 3.5rem;
+      padding-top: 4.5rem;
+    }
+
+    /* A slight tilt, like a photo pinned to the page; it straightens on hover. */
+    .portrait {
+      transform: rotate(1.5deg);
+      transition: transform 0.4s ease;
+    }
+
+    .portrait:hover {
+      transform: rotate(0);
+    }
+  }
+
+  .doors {
+    display: grid;
+    gap: 1rem;
+    margin-top: 3.5rem;
+  }
+
+  @media (min-width: 720px) {
+    .doors {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .title {
+    font-size: 1.1rem;
+    font-weight: 650;
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+  }
+
+  .excerpt {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    color: var(--muted);
+  }
+
+  .meta {
+    margin-top: auto;
+    font-size: 0.88rem;
+    color: var(--muted);
+  }
+
+  /* YouTube thumbnails are 4:3 with letterbox bars; a hair under 16:9 crops the bars away fully. */
+  .thumb {
+    width: 100%;
+    aspect-ratio: 16 / 8.85;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    object-fit: cover;
+  }
+
+  .stat {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    color: var(--muted);
+  }
+
+  .big {
+    font-size: 3.4rem;
+    font-weight: 750;
+    line-height: 1;
+    letter-spacing: -0.05em;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .bars {
+    display: grid;
+    gap: 0.55rem;
+    margin: 0.4rem 0 0.2rem;
+    padding: 0;
+    list-style: none;
+    font-size: 0.88rem;
+  }
+
+  .bars li {
+    display: grid;
+    grid-template-columns: 4.2rem 1fr 2.8rem;
+    gap: 0.75rem;
+    align-items: center;
+  }
+
+  .track {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--line);
+    overflow: hidden;
+  }
+
+  /* Bars fill once the pipeline has finished, so the two motions don't compete. */
+  .fill {
+    display: block;
+    height: 100%;
+    width: calc(var(--fill) * 100%);
+    border-radius: inherit;
+    background: var(--text);
+    opacity: 0.55;
+    transform: scaleX(0);
+    transform-origin: left;
+    animation: grow 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 2.4s forwards;
+  }
+
+  .hard .fill {
+    background: var(--accent);
+    opacity: 1;
+  }
+
+  .count {
+    font-weight: 650;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  @keyframes grow {
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  .person {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+  }
+
+  .person img {
+    width: 56px;
+    height: 56px;
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+  }
+
+  .person .meta {
+    margin-top: 0;
+  }
+
+  .name {
+    font-weight: 700;
+  }
+</style>

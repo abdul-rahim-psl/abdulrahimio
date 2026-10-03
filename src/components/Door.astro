@@ -1,0 +1,74 @@
+---
+interface Props {
+  href: string;
+  label: string;
+  cta: string;
+  external?: boolean;
+}
+
+const { href, label, cta, external = false } = Astro.props;
+---
+
+<a class="door" href={href} target={external ? '_blank' : undefined} rel={external ? 'noopener' : undefined}>
+  <span class="label">{label}</span>
+  <div class="body"><slot /></div>
+  <span class="cta">
+    {cta}
+    <span class="arrow" aria-hidden="true">{external ? '↗' : '→'}</span>
+  </span>
+</a>
+
+<style>
+  .door {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.4rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    color: inherit;
+    text-decoration: none;
+    transition:
+      transform 0.2s ease,
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .door:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent);
+    box-shadow: 0 18px 40px -28px rgb(240 78 20 / 0.55);
+  }
+
+  .label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 600;
+    color: var(--accent-ink);
+  }
+
+  .arrow {
+    transition: transform 0.2s ease;
+  }
+
+  .door:hover .arrow {
+    transform: translate(3px, 0);
+  }
+</style>
