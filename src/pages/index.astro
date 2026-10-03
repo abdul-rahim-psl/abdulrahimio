@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import Pipeline from '../components/Pipeline.astro';
 import Door from '../components/Door.astro';
 import { site } from '../site';
+import { projects } from '../data/projects';
 import { getChannel, getLeetCode, getPosts } from '../lib/feeds';
 import { formatDate, formatNumber } from '../lib/format';
 
@@ -42,6 +43,29 @@ const linkedinHandle = site.links.linkedin.replace(/^https:\/\/(www\.)?/, '').re
   </section>
 
   <Pipeline />
+
+  <section class="work" id="work" aria-labelledby="work-title">
+    <p class="eyebrow">Selected work</p>
+    <h2 id="work-title">Payments infrastructure, <span class="voice">end to end</span>.</h2>
+    <div class="projects">
+      {projects.map((project) => (
+        <Door href={`/projects/${project.slug}`} label={project.tag} cta="How it works">
+          <h3 class="project-name">{project.name}</h3>
+          <p class="summary">{project.summary}</p>
+          <ol class="chips" aria-label={`How ${project.name} flows`}>
+            {project.flow.map((step) => (
+              <li>
+                <span>{step}</span>
+              </li>
+            ))}
+          </ol>
+          <p class="role">
+            <strong>My part:</strong> {project.role}
+          </p>
+        </Door>
+      ))}
+    </div>
+  </section>
 
   <section class="doors" aria-label="Find me elsewhere">
     <Door href="/videos" label="Watch me think" cta={channel.videoCount ? `All ${channel.videoCount} videos` : 'All videos'}>
@@ -88,11 +112,8 @@ const linkedinHandle = site.links.linkedin.replace(/^https:\/\/(www\.)?/, '').re
 
     <Door href={site.links.linkedin} external label="Let's talk" cta="Connect on LinkedIn">
       <div class="person">
-        <img src="/images/abdul-rahim-avatar.webp" alt="" width="56" height="56" loading="lazy" />
-        <div>
-          <p class="name">{site.name}</p>
-          <p class="meta">{site.title}</p>
-        </div>
+        <p class="name">{site.name}</p>
+        <p class="meta">{site.title}</p>
       </div>
       <p class="title">Got a hard problem? I'd love to hear about it.</p>
       <p class="meta">{linkedinHandle}</p>
@@ -270,24 +291,91 @@ const linkedinHandle = site.links.linkedin.replace(/^https:\/\/(www\.)?/, '').re
     }
   }
 
-  .person {
-    display: flex;
-    align-items: center;
-    gap: 0.85rem;
-  }
-
-  .person img {
-    width: 56px;
-    height: 56px;
-    border: 2px solid var(--accent);
-    border-radius: 50%;
-  }
-
   .person .meta {
-    margin-top: 0;
+    margin-top: 0.1rem;
   }
 
   .name {
+    font-size: 1.15rem;
     font-weight: 700;
+  }
+
+  .work {
+    display: grid;
+    gap: 1rem;
+    margin-top: 5rem;
+  }
+
+  .work h2 {
+    margin-bottom: 1rem;
+    font-size: clamp(1.9rem, 4.2vw, 2.9rem);
+    font-weight: 750;
+    letter-spacing: -0.04em;
+  }
+
+  .work h2 .voice {
+    font-size: 1.12em;
+  }
+
+  .projects {
+    display: grid;
+    gap: 1rem;
+  }
+
+  @media (min-width: 900px) {
+    .projects {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .project-name {
+    font-size: 1.55rem;
+    font-weight: 750;
+    letter-spacing: -0.03em;
+  }
+
+  .summary {
+    color: var(--muted);
+  }
+
+  /* The system's data flow at a glance: stages as pills, joined by accent arrows. */
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin: 0.3rem 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .chips li {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .chips span {
+    padding: 0.28rem 0.7rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--bg);
+  }
+
+  /* The arrow leads each stage, so a wrapped line starts "→ next" instead of ending on a dangling arrow. */
+  .chips li:not(:first-child)::before {
+    content: '→';
+    color: var(--accent);
+  }
+
+  .role {
+    margin-top: auto;
+    font-size: 0.92rem;
+    color: var(--muted);
+  }
+
+  .role strong {
+    color: var(--text);
   }
 </style>

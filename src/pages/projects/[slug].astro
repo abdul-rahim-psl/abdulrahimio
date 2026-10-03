@@ -1,0 +1,209 @@
+---
+import Base from '../../layouts/Base.astro';
+import Flow from '../../components/Flow.astro';
+import { projects, type Project } from '../../data/projects';
+
+export function getStaticPaths() {
+  return projects.map((project) => ({ params: { slug: project.slug }, props: { project } }));
+}
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const isExternal = (href: string) => href.startsWith('http');
+---
+
+<Base title={project.name} description={project.summary}>
+  <article>
+    <a class="back" href="/#work">← All work</a>
+
+    <header class="page-head">
+      <p class="eyebrow">{project.tag}</p>
+      <h1>
+        {project.headline.lead} <span class="voice">{project.headline.voice}</span>{project.headline.tail}
+      </h1>
+      <p class="lede">{project.lede}</p>
+      <ul class="stack" aria-label="Technology">
+        {project.stack.map((tech) => <li>{tech}</li>)}
+      </ul>
+    </header>
+
+    <section>
+      <h2>How it works</h2>
+      <Flow stages={project.stages} />
+    </section>
+
+    <section class="split">
+      <div>
+        <h2>Why it's great engineering</h2>
+        <ul class="points">
+          {project.strengths.map((point) => <li>{point}</li>)}
+        </ul>
+      </div>
+      <div>
+        <h2>My part</h2>
+        <div class="part">
+          {project.part.map((paragraph) => <p>{paragraph}</p>)}
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Go deeper</h2>
+      <ul class="links">
+        {project.links.map(({ label, href }) => (
+          <li>
+            <a href={href} target={isExternal(href) ? '_blank' : undefined} rel={isExternal(href) ? 'noopener' : undefined}>
+              {label}
+              <span aria-hidden="true">{isExternal(href) ? '↗' : '→'}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </article>
+</Base>
+
+<style>
+  article {
+    max-width: 48rem;
+  }
+
+  .back {
+    display: inline-block;
+    margin-top: 2rem;
+    font-size: 0.95rem;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .back:hover {
+    color: var(--accent-ink);
+  }
+
+  .page-head {
+    display: grid;
+    gap: 1.1rem;
+    padding: 2rem 0 1rem;
+  }
+
+  h1 {
+    font-size: clamp(2.4rem, 5.5vw, 3.8rem);
+    font-weight: 750;
+    letter-spacing: -0.045em;
+  }
+
+  h1 .voice {
+    font-size: 1.12em;
+  }
+
+  .lede {
+    max-width: 42rem;
+  }
+
+  .stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.4rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .stack li {
+    padding: 0.3rem 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  section {
+    margin-top: 3.5rem;
+  }
+
+  h2 {
+    margin-bottom: 1.5rem;
+    font-size: clamp(1.4rem, 3vw, 1.75rem);
+    font-weight: 750;
+  }
+
+  .split {
+    display: grid;
+    gap: 3rem;
+  }
+
+  @media (min-width: 900px) {
+    article {
+      max-width: none;
+    }
+
+    .page-head,
+    section:not(.split) {
+      max-width: 48rem;
+    }
+
+    .split {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .points {
+    display: grid;
+    gap: 0.9rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .points li {
+    position: relative;
+    padding-left: 1.4rem;
+  }
+
+  .points li::before {
+    content: '';
+    position: absolute;
+    top: 0.62em;
+    left: 0;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .part {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .links a {
+    display: inline-flex;
+    gap: 0.4rem;
+    padding: 0.7rem 1.1rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    font-weight: 600;
+    color: var(--accent-ink);
+    text-decoration: none;
+    transition: border-color 0.2s;
+  }
+
+  .links a:hover {
+    border-color: var(--accent);
+  }
+</style>

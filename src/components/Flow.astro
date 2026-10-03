@@ -1,0 +1,99 @@
+---
+import type { Stage } from '../data/projects';
+
+interface Props {
+  stages: Stage[];
+}
+
+const { stages } = Astro.props;
+---
+
+<ol class="flow" style={`--gaps: ${stages.length - 1}`}>
+  {stages.map((stage, i) => (
+    <li style={`--i: ${i}`}>
+      <span class="dot" aria-hidden="true" />
+      <div>
+        <h3>{stage.name}</h3>
+        <p>{stage.detail}</p>
+      </div>
+    </li>
+  ))}
+</ol>
+
+<style>
+  /* Same motion as the home pipeline: the accent travels down, lighting each stage. */
+  .flow {
+    --start: 0.3s;
+    --run: 1.6s;
+    --gap: 1.6rem;
+    --dot-center: calc(0.3rem + 7px);
+    display: grid;
+    gap: var(--gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    --arrive: calc(var(--start) + var(--i) * var(--run) / var(--gaps));
+    position: relative;
+    display: grid;
+    grid-template-columns: 14px 1fr;
+    gap: 1.1rem;
+  }
+
+  /* Each stage draws its own connector to the next dot, so text length never misaligns the line. */
+  li:not(:last-child)::before,
+  li:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: var(--dot-center);
+    bottom: calc(-1 * (var(--gap) + var(--dot-center)));
+    left: 6px;
+    width: 2px;
+    background: var(--line);
+  }
+
+  li:not(:last-child)::after {
+    background: var(--accent);
+    transform: scaleY(0);
+    transform-origin: top;
+    animation: run calc(var(--run) / var(--gaps)) linear var(--arrive) forwards;
+  }
+
+  .dot {
+    position: relative;
+    z-index: 1;
+    width: 14px;
+    height: 14px;
+    margin-top: 0.3rem;
+    border: 2px solid var(--line);
+    border-radius: 50%;
+    background: var(--bg);
+    animation: light 0.3s ease var(--arrive) forwards;
+  }
+
+  h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    margin-top: 0.25rem;
+    color: var(--muted);
+  }
+
+  @keyframes run {
+    to {
+      transform: scaleY(1);
+    }
+  }
+
+  @keyframes light {
+    to {
+      border-color: var(--accent);
+      background: var(--accent);
+    }
+  }
+</style>

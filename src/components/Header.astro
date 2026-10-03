@@ -2,8 +2,9 @@
 import { site } from '../site';
 
 const nav = [
-  { href: '/videos', label: 'Videos' },
-  { href: '/writing', label: 'Writing' },
+  { href: '/#work', label: 'Work', section: '/projects' },
+  { href: '/videos', label: 'Videos', section: '/videos' },
+  { href: '/writing', label: 'Writing', section: '/writing' },
 ];
 const path = Astro.url.pathname;
 ---
@@ -14,8 +15,8 @@ const path = Astro.url.pathname;
     <span class="pulse" aria-hidden="true"></span>
   </a>
   <nav aria-label="Main">
-    {nav.map(({ href, label }) => (
-      <a href={href} aria-current={path.startsWith(href) ? 'page' : undefined}>
+    {nav.map(({ href, label, section }) => (
+      <a href={href} aria-current={path.startsWith(section) ? 'page' : undefined}>
         {label}
       </a>
     ))}
@@ -89,7 +90,15 @@ const path = Astro.url.pathname;
 
   @media (max-width: 480px) {
     nav a {
-      padding-inline: 0.5rem;
+      padding-inline: 0.45rem;
+      font-size: 0.9rem;
+    }
+  }
+
+  /* Small phones can't fit four links beside the name; the email stays one tap away in the footer. */
+  @media (max-width: 400px) {
+    nav .hi {
+      display: none;
     }
   }
 </style>
