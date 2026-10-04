@@ -29,26 +29,27 @@ npm run preview   # serve the built site
 | What | File |
 |---|---|
 | Name, title, email, profile links, the delivery pipeline | `src/site.ts` |
-| Projects (home cards and `/projects/<slug>` pages) | `src/data/projects.ts` |
+| Projects (home cards and `/projects/<slug>` pages), including their numbers (`stats`) | `src/data/projects.ts` |
 | Home page copy | `src/pages/index.astro` |
 | Colours and typography tokens | `src/styles/global.css` |
 | Photo, link-preview image, font | `public/` |
 
 ## Live data
 
-The YouTube, Medium and LeetCode data is fetched **once, at build time** (`src/lib/feeds.ts`):
+The YouTube, Medium, LeetCode and GitHub data is fetched **once, at build time** (`src/lib/feeds.ts`):
 
 | Source | How | If it fails |
 |---|---|---|
-| YouTube | Channel RSS feed (latest 15 videos); total video count from the channel page | The card falls back to a plain link |
+| YouTube | Channel RSS feed (latest 15 videos); total video count from the channel page | The last known videos, kept in `src/lib/feeds.ts` |
 | Medium | Profile RSS feed | The card falls back to a plain link |
 | LeetCode | LeetCode's unofficial GraphQL endpoint | The last known numbers, kept in `src/lib/feeds.ts` |
+| GitHub | Public REST API: commits and merged pull requests across `tazama-lf`, and the contributor ranking of `event-monitoring-service` | The last known numbers, kept in `src/lib/feeds.ts` |
 
 A failing source never fails the build.
 
 ## Deploying and refreshing
 
-**There is no scheduled rebuild. This is deliberate: the site is refreshed manually.** New videos, posts and LeetCode numbers appear only after a new production deploy.
+**There is no scheduled rebuild. This is deliberate: the site is refreshed manually.** New videos, posts, LeetCode and GitHub numbers appear only after a new production deploy.
 
 The Vercel project is not connected to GitHub, so pushing to `main` does not deploy. To publish changes or refresh the live data, run this from the repo root with the Vercel CLI logged in:
 

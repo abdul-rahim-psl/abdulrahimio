@@ -7,6 +7,7 @@
 }
 
 :root {
+  color-scheme: light;
   --bg: #fbfaf7;
   --surface: #ffffff;
   --text: #17171b;
@@ -22,8 +23,10 @@
   --font-serif: 'Instrument Serif', Georgia, serif;
 }
 
+/* Dark follows the system unless the visitor has picked light with the toggle. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
     --bg: #111113;
     --surface: #19191d;
     --text: #f3f2ef;
@@ -33,6 +36,26 @@
     --accent-ink: #ff9466;
     --accent-soft: #2a1710;
   }
+}
+
+/* The same values for a visitor who picked dark on a light system; keep both blocks in sync. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #111113;
+  --surface: #19191d;
+  --text: #f3f2ef;
+  --muted: #a3a3ad;
+  --line: #2b2b31;
+  --accent: #ff6a33;
+  --accent-ink: #ff9466;
+  --accent-soft: #2a1710;
+}
+
+/* While the theme switches, colours change in one frame instead of some fading on their own. */
+.theme-switching *,
+.theme-switching *::before,
+.theme-switching *::after {
+  transition: none !important;
 }
 
 *,

@@ -1,6 +1,19 @@
+import { getGitHub } from '../lib/feeds';
+import { formatNumber } from '../lib/format';
+
 export interface Stage {
   name: string;
   detail: string;
+}
+
+export interface Stat {
+  value: string;
+  /** For a before-and-after figure: shown as "from → value". */
+  from?: string;
+  /** Reads on from the value: "661" + "commits to Tazama…". */
+  label: string;
+  /** Where a reader can check the number. */
+  source?: { label: string; href: string };
 }
 
 export interface Project {
@@ -14,11 +27,16 @@ export interface Project {
   flow: string[];
   lede: string;
   stack: string[];
+  /** Under the page intro; the first one also goes on the home card. */
+  stats: Stat[];
   stages: Stage[];
   strengths: string[];
   part: string[];
   links: { label: string; href: string }[];
 }
+
+// Read from GitHub at build time, like the other live numbers on the site.
+const github = await getGitHub();
 
 export const projects: Project[] = [
   {
@@ -33,6 +51,30 @@ export const projects: Project[] = [
     lede:
       'Tazama is an open-source, real-time transaction monitoring platform that helps financial institutions and payment ecosystems detect fraud and money-laundering typologies. The project is managed by the Linux Foundation and funded by the Gates Foundation.',
     stack: ['TypeScript', 'NestJS', 'NATS', 'ISO 20022'],
+    stats: [
+      {
+        value: `#${github.dems.rank}`,
+        label: `of ${github.dems.contributors} contributors to DEMS, Tazama's event monitoring service, with ${Math.round(github.dems.share * 100)}% of its commits.`,
+        source: { label: 'Contributors graph', href: 'https://github.com/tazama-lf/event-monitoring-service/graphs/contributors' },
+      },
+      {
+        from: '4',
+        value: 'any',
+        label: 'message types Tazama can ingest, with TCS and DEMS.',
+        source: { label: 'The article', href: 'https://medium.com/@abdulrahimio/extending-tazama-a-deep-dive-part-1-8b255035d334' },
+      },
+      {
+        value: formatNumber(github.commits),
+        label: `commits to Tazama, and ${github.mergedPulls} merged pull requests.`,
+        source: { label: 'GitHub search', href: 'https://github.com/search?q=author%3Aabdul-rahim-psl+org%3Atazama-lf&type=commits' },
+      },
+      {
+        from: '1 day',
+        value: '2 hours',
+        label: 'to update a fraud rule, with Rule Studio.',
+        source: { label: 'Rule Studio', href: 'https://github.com/tazama-lf/rule-studio' },
+      },
+    ],
     stages: [
       {
         name: 'Transaction Monitoring Service',
@@ -71,6 +113,7 @@ export const projects: Project[] = [
       "Tazama's Transaction Monitoring Service ingested exactly four ISO 20022 messages (pain.001, pain.013, pacs.008 and pacs.002), each through its own hard-coded handler. A fifth message meant a fifth handler, and that doesn't scale.",
       'So we designed two services instead. Tazama Connection Studio (TCS) lets a user configure a new kind of transaction message. Dynamic Event Monitoring (DEMS) ingests it live through a single catch-all endpoint: it extracts data from a payload of any shape, decides at runtime which functions to invoke, and extends the data model when a message needs it.',
       'The result: new message types reach the core pipeline without touching its code, so new rules and typologies can evaluate them.',
+      'I also work on Rule Studio, where analysts configure and test fraud rules without a redeploy. A rule update that took a day now takes two hours.',
     ],
     links: [
       { label: 'Video: how we extend core Tazama', href: 'https://www.youtube.com/watch?v=o_nYEyIP31U' },
@@ -91,6 +134,17 @@ export const projects: Project[] = [
     lede:
       'The COMESA Clearing House is built on the Mojaloop reference architecture, and Mojaloop is the hub: the interoperability key that lets different payment providers send money to each other. Mojaloop is open-source software for inclusive instant payment systems.',
     stack: ['Mojaloop', 'Tazama FRMS', 'ISO 20022'],
+    stats: [
+      {
+        value: '500',
+        label: 'messages replayed as a regression check before any change ships.',
+      },
+      {
+        value: '21',
+        label: 'African member states in COMESA, the common market behind the clearing house.',
+        source: { label: 'comesa.int', href: 'https://www.comesa.int/' },
+      },
+    ],
     stages: [
       {
         name: 'Payment providers',

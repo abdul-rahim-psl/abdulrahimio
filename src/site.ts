@@ -14,7 +14,11 @@ export const site = {
   youtubeChannelId: 'UCMnkT3GptVvsnyty-kCYHDw',
   leetcodeUsername: 'abdulxraheem',
   mediumUsername: 'abdulrahimio',
+  // The account behind his Tazama contributions.
+  githubUsername: 'abdul-rahim-psl',
   // Highest "Day N" in the daily LeetCode video series; not derivable once older videos leave the feed.
   practiceDays: 736,
+  // The series has ended, so the card states its span instead of a running day count.
+  practiceYears: '2023–25',
   pipeline: ['Requirements', 'Analysis', 'Business case', 'Build', 'Testing', 'Pen-testing', 'Delivery'],
 } as const;

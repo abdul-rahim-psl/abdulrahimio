@@ -1,0 +1,117 @@
+<button class="toggle" type="button" aria-label="Dark mode" aria-pressed="false" title="Toggle dark mode" data-theme-toggle>
+  <svg class="moon" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M20.5 14.3A8.5 8.5 0 1 1 9.7 3.5a6.8 6.8 0 0 0 10.8 10.8Z" />
+  </svg>
+  <svg class="sun" viewBox="0 0 24 24" aria-hidden="true">
+    <circle cx="12" cy="12" r="4.2" />
+    <path
+      d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.55 1.55M17.15 17.15l1.55 1.55M5.3 18.7l1.55-1.55M17.15 6.85l1.55-1.55"
+    />
+  </svg>
+</button>
+
+<script>
+  const KEY = 'theme';
+  const root = document.documentElement;
+  const button = document.querySelector('[data-theme-toggle]');
+  const system = matchMedia('(prefers-color-scheme: dark)');
+  const systemTheme = () => (system.matches ? 'dark' : 'light');
+  const current = () => root.dataset.theme ?? systemTheme();
+
+  // Storage can be unavailable (private browsing, blocked cookies); the toggle then lasts for this page only.
+  function saved(): string | null {
+    try {
+      return localStorage.getItem(KEY);
+    } catch {
+      return null;
+    }
+  }
+
+  function apply(theme: string | null) {
+    root.classList.add('theme-switching');
+    if (theme === 'light' || theme === 'dark') root.dataset.theme = theme;
+    else delete root.dataset.theme;
+    button?.setAttribute('aria-pressed', String(current() === 'dark'));
+    // Flush styles while transitions are off, so turning them back on animates nothing.
+    getComputedStyle(root).color;
+    setTimeout(() => root.classList.remove('theme-switching'));
+  }
+
+  button?.addEventListener('click', () => {
+    const next = current() === 'dark' ? 'light' : 'dark';
+    // Picking what the system already shows drops the override, so the site follows the system again.
+    const choice = next === systemTheme() ? null : next;
+    try {
+      if (choice) localStorage.setItem(KEY, choice);
+      else localStorage.removeItem(KEY);
+    } catch {}
+    apply(choice);
+  });
+
+  // Stay in step with system changes, other tabs, and pages restored by the back button.
+  system.addEventListener('change', () => apply(saved()));
+  addEventListener('storage', (event) => {
+    if (event.key === KEY) apply(event.newValue);
+  });
+  addEventListener('pageshow', (event) => {
+    if (event.persisted) apply(saved());
+  });
+  button?.setAttribute('aria-pressed', String(current() === 'dark'));
+</script>
+
+<style>
+  .toggle {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+    transition:
+      color 0.2s,
+      border-color 0.2s;
+  }
+
+  .toggle:hover {
+    border-color: var(--accent);
+    color: var(--text);
+  }
+
+  svg {
+    width: 1.1rem;
+    height: 1.1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* The icon shows where a click goes: a moon in light mode, a sun in dark mode. */
+  .sun {
+    display: none;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .sun {
+      display: block;
+    }
+
+    :global(:root:not([data-theme='light'])) .moon {
+      display: none;
+    }
+  }
+
+  :global(:root[data-theme='dark']) .sun {
+    display: block;
+  }
+
+  :global(:root[data-theme='dark']) .moon {
+    display: none;
+  }
+</style>

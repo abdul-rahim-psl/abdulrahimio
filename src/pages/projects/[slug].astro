@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Flow from '../../components/Flow.astro';
+import StatValue from '../../components/StatValue.astro';
 import { projects, type Project } from '../../data/projects';
 
 export function getStaticPaths() {
@@ -29,6 +30,22 @@ const isExternal = (href: string) => href.startsWith('http');
         {project.stack.map((tech) => <li>{tech}</li>)}
       </ul>
     </header>
+
+    <ul class="stats" aria-label="By the numbers">
+      {project.stats.map((stat) => (
+        <li>
+          <p class="figure">
+            <StatValue stat={stat} />
+          </p>
+          <p class="label">{stat.label}</p>
+          {stat.source && (
+            <a class="source" href={stat.source.href} target="_blank" rel="noopener">
+              {stat.source.label} <span aria-hidden="true">↗</span>
+            </a>
+          )}
+        </li>
+      ))}
+    </ul>
 
     <section>
       <h2>How it works</h2>
@@ -122,6 +139,52 @@ const isExternal = (href: string) => href.startsWith('http');
     font-weight: 600;
   }
 
+  .stats {
+    display: grid;
+    gap: 1.75rem 2.5rem;
+    margin: 1.75rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 640px) {
+    .stats {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .stats li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .figure {
+    font-size: clamp(2.2rem, 5vw, 2.6rem);
+    font-weight: 750;
+    line-height: 1;
+    letter-spacing: -0.045em;
+  }
+
+  .label {
+    color: var(--muted);
+  }
+
+  .source {
+    align-self: flex-start;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--accent-ink);
+    text-decoration: none;
+  }
+
+  .source:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
   section {
     margin-top: 3.5rem;
   }
@@ -143,6 +206,7 @@ const isExternal = (href: string) => href.startsWith('http');
     }
 
     .page-head,
+    .stats,
     section:not(.split) {
       max-width: 48rem;
     }

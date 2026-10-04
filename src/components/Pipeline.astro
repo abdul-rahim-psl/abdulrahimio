@@ -64,24 +64,24 @@ const count = site.pipeline.length;
     gap: 0.7rem;
     font-size: 0.82rem;
     font-weight: 500;
-    color: var(--muted);
+    color: var(--text);
     text-align: center;
     --arrive: calc(var(--start) + var(--i) * var(--run) / var(--gaps));
-    animation: ink 0.3s ease var(--arrive) forwards;
+    animation: ink 0.3s ease var(--arrive) backwards;
   }
 
   .dot {
     width: 14px;
     height: 14px;
-    border: 2px solid var(--line);
+    border: 2px solid var(--accent);
     border-radius: 50%;
-    background: var(--bg);
-    animation: light 0.3s ease var(--arrive) forwards;
+    background: var(--accent);
+    animation: light 0.3s ease var(--arrive) backwards;
   }
 
   li:last-child .dot {
     animation:
-      light 0.3s ease var(--arrive) forwards,
+      light 0.3s ease var(--arrive) backwards,
       ring 1.4s ease-out calc(var(--arrive) + 0.3s) 2;
   }
 
@@ -107,16 +107,17 @@ const count = site.pipeline.length;
     }
   }
 
+  /* Stages start unlit and end on their own colours, which follow a theme switch; a held last frame may not. */
   @keyframes light {
-    to {
-      border-color: var(--accent);
-      background: var(--accent);
+    from {
+      border-color: var(--line);
+      background: var(--bg);
     }
   }
 
   @keyframes ink {
-    to {
-      color: var(--text);
+    from {
+      color: var(--muted);
     }
   }
 
