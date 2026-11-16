@@ -6,6 +6,8 @@ export interface Stage {
   detail: string;
 }
 
+// teaching git concept of staging
+
 export interface Stat {
   value: string;
   /** For a before-and-after figure: shown as "from → value". */
